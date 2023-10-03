@@ -1,1 +1,7 @@
-# A brief description of the program.
+The implementation of a classic mine sweeper game.
+This game is created as a console-based game. In order to 
+play the game, simply download "sweeper.cpp" file, use g++
+command to run in the compiler, and there you go!
+
+
+
