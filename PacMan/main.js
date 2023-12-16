@@ -1,8 +1,8 @@
-const canvas = document.querySelector('canvas')
-const c = canvas.getContext('2d')
+const canvas = document.querySelector("canvas")
+const content = canvas.getContext("2d")
 
-canvas.width = innerWidth
-canvas.height = innerHeight
+canvas.width = window.innerWidth
+canvas.height = window.innerHeight
 
 class Boundary 
 {
@@ -14,23 +14,31 @@ class Boundary
     }
 
     //function that prints the boundary 
-    draw() {
-        c.fillStyle = 'blue'
-        c.fillRect(this.position.x, this.position.y, this.position.width, 
-            this.position.height)
+    print() {
+        content.fillStyle = 'blue'
+        content.fillRect(this.position.x, this.position.y, this.width, 
+            this.height)
     }
 }
 
-// const final_boundary = [
-//     new map({ position: {x:0, y:0}}),
-//     new map({ position: {x:51, y:0}})
-// ]
+const final_boundary = [
+    new map({ position: {x:0, y:0}}),
+    new map({ position: {x:51, y:0}})
+]
 
-// final_boundary.forEach(border =>{border.draw()})
-const final_boundary = new Boundary({ 
-    position: {
-        x:0, 
-        y:0
-    }
-})
-final_boundary.draw()
+final_boundary.forEach(border =>{border.print()})
+// const final_boundary = new Boundary({ 
+//     position: {
+//         x:0, 
+//         y:0
+//     }
+// })
+// final_boundary.draw()
+
+// const final_boundary2 = new Boundary({ 
+//     position: {
+//         x:41, 
+//         y:0
+//     }
+// })
+// final_boundary2.draw()
