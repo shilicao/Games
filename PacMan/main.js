@@ -21,24 +21,29 @@ class Boundary
     }
 }
 
-const final_boundary = [
-    new map({ position: {x:0, y:0}}),
-    new map({ position: {x:51, y:0}})
+// used to generate new corresponding squares for boundaries. 
+const map = [
+    ['-','-','-','-','-','-',],
+    ['-',' ',' ',' ',' ','-',],
+    ['-',' ',' ',' ',' ','-',],
+    ['-',' ',' ',' ',' ','-',],
+    ['-','-','-','-','-','-',],
 ]
 
-final_boundary.forEach(border =>{border.print()})
-// const final_boundary = new Boundary({ 
-//     position: {
-//         x:0, 
-//         y:0
-//     }
-// })
-// final_boundary.draw()
+const tmp_boundary = []
+map.forEach((row, index) => {
+    row.forEach((symbol, index2) => {
+        switch(symbol) {
+            case '-':
+                tmp_boundary.push(new Boundary({
+                    positions:{
+                        x:40 * index2,
+                        y:40 * index
+                    }
+                }))
+                break
+        }
+    })
+})
 
-// const final_boundary2 = new Boundary({ 
-//     position: {
-//         x:41, 
-//         y:0
-//     }
-// })
-// final_boundary2.draw()
+tmp_boundary.forEach((square) => {square.print()})
