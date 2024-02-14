@@ -6,6 +6,9 @@ canvas.height = window.innerHeight
 
 class Boundary 
 {
+    static width = 40
+    static height = 40
+
     //Property for map boundaries.
     constructor({position}){
         this.position = position
@@ -23,27 +26,34 @@ class Boundary
 
 // used to generate new corresponding squares for boundaries. 
 const map = [
-    ['-','-','-','-','-','-',],
-    ['-',' ',' ',' ',' ','-',],
-    ['-',' ',' ',' ',' ','-',],
-    ['-',' ',' ',' ',' ','-',],
-    ['-','-','-','-','-','-',],
+    ['-', '-', '-', '-', '-', '-'],
+    ['-', ' ', ' ', ' ', ' ', '-'],
+    ['-', ' ', '-', '-', ' ', '-'],
+    ['-', ' ', ' ', ' ', ' ', '-'],
+    ['-', '-', '-', '-', '-', '-']
 ]
+const tmp_boundaries =[]
 
-const tmp_boundary = []
-map.forEach((row, index) => {
-    row.forEach((symbol, index2) => {
-        switch(symbol) {
+//Following will generate boundary(a square) dynamically based on the map contents. 
+//Switch statement used to handle different object cases. 
+map.forEach((row, i) => {
+    row.forEach ((object, j) => {
+        switch (object) {
             case '-':
-                tmp_boundary.push(new Boundary({
-                    positions:{
-                        x:40 * index2,
-                        y:40 * index
-                    }
-                }))
+                tmp_boundaries.push(
+                    new Boundary ({
+                        position: {
+                            x:Boundary.width*j,
+                            y:Boundary.height*i
+                        }
+                    })
+                )
                 break
         }
     })
 })
 
-tmp_boundary.forEach((square) => {square.print()})
+//prints the grid, like in a loop.
+tmp_boundaries.forEach((boundary) => {
+    boundary.print()
+})
