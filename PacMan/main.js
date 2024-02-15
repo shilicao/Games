@@ -24,6 +24,22 @@ class Boundary
     }
 }
 
+class pacman {
+    constructor ({position, velocity}) {
+        this.position = position
+        this.velocity = velocity // pacman will have movements. 
+        this.radius = 10 //circular figure. Number will be subject to change later on
+    }
+
+    print() {
+        content.beginPath()
+        content.arc(this.position.x, this.position.y,
+                    this.radius, 0, Math.PI * 2)
+        content.fillStyle = "yellow"
+        content.fill()
+        content.closePath()
+    }
+}
 // used to generate new corresponding squares for boundaries. 
 const map = [
     ['-', '-', '-', '-', '-', '-'],
@@ -33,6 +49,7 @@ const map = [
     ['-', '-', '-', '-', '-', '-']
 ]
 const tmp_boundaries =[]
+const man = new pacman()
 
 //Following will generate boundary(a square) dynamically based on the map contents. 
 //Switch statement used to handle different object cases. 
