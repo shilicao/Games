@@ -4,6 +4,7 @@ const content = canvas.getContext("2d")
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
 
+//class for map generation.
 class Boundary 
 {
     static width = 40
@@ -24,11 +25,12 @@ class Boundary
     }
 }
 
+//class for actual game contents
 class pacman {
     constructor ({position, velocity}) {
         this.position = position
         this.velocity = velocity // pacman will have movements. 
-        this.radius = 10 //circular figure. Number will be subject to change later on
+        this.radius = 15 //circular figure. Number will be subject to change later on
     }
 
     print() {
@@ -49,7 +51,16 @@ const map = [
     ['-', '-', '-', '-', '-', '-']
 ]
 const tmp_boundaries =[]
-const man = new pacman()
+const man = new pacman({
+    position: {
+        x: Boundary.width + Boundary.width / 2
+        y: Boundary.height + Boundary.height / 2
+    },
+    velocity: {
+        x: 0,
+        y: 0
+    }
+})
 
 //Following will generate boundary(a square) dynamically based on the map contents. 
 //Switch statement used to handle different object cases. 
@@ -71,6 +82,23 @@ map.forEach((row, i) => {
 })
 
 //prints the grid, like in a loop.
-tmp_boundaries.forEach((boundary) => {
-    boundary.print()
+tmp_boundaries.forEach((boundary) => {boundary.print()})
+man.print()
+
+window.addEventListener ('keydown,' ({key})=>{
+    console.log(key)
+    switch (key) {
+        case 'w':
+        man.velocity.y = -5
+        break
+        case 'a':
+        man.velocity.y = -5
+        break
+        case 's':
+        man.velocity.y = 5
+        break
+        case 'd':
+        man.velocity.y = 5
+        break
+    }
 })
