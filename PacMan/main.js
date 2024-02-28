@@ -103,11 +103,21 @@ function animation (){
     requestAnimationFrame(animation)
     content.clearRect(0, 0, canvas.width, canvas.height)
     //prints the grid, like in a loop.
-    tmp_boundaries.forEach((boundary) => {boundary.print()})
+    tmp_boundaries.forEach((boundary) => {
+        boundary.print()
+
+        //checks for overlapping, so the pacman does not go out of the designed boundary
+        if (man.position.y - man.radius + man.velocity.y <= boundary.position.y + boundary.height
+        && man.position.x + man.radius + man.velocity.x >= boundary.position.x &&
+        man.position.y + man.radius + man.velocity.y>= boundary.position.y && 
+        man.position.x - man.radius + man.velocity.x <= boundary.position.x + boundary.width) 
+        {
+            console.log ('colliding')
+        }
+    })
     man.update()
 
-    man.velocity.x = 0
-    man.velocity.y = 0
+    
     if (k.w.pressed && final_key === 'w')
     {
         man.velocity.y = -5
@@ -187,3 +197,4 @@ window.addEventListener ('keyup', ({key})=>{
 //     }
 //     console.log(man.velocity)
 // })
+
