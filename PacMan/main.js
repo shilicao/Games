@@ -53,11 +53,13 @@ class pacman
 }
 // used to generate new corresponding squares for boundaries. 
 const map = [
-    ['-', '-', '-', '-', '-', '-'],
-    ['-', ' ', ' ', ' ', ' ', '-'],
-    ['-', ' ', '-', '-', ' ', '-'],
-    ['-', ' ', ' ', ' ', ' ', '-'],
-    ['-', '-', '-', '-', '-', '-']
+    ['-', '-', '-', '-', '-', '-','-'],
+    ['-', ' ', ' ', ' ', ' ', ' ','-'],
+    ['-', ' ', '-', ' ', '-', ' ','-'],
+    ['-', ' ', ' ', ' ', ' ', ' ','-'],
+    // ['-', ' ', '-', ' ', '-', ' ','-'],
+    // ['-', ' ', ' ', ' ', ' ', ' ','-'],
+    ['-', '-', '-', '-', '-', '-','-']
 ]
 const tmp_boundaries =[]
 const man = new pacman({
@@ -98,42 +100,79 @@ map.forEach((row, i) => {
         }
     })
 })
+function collsion({player, block}){
+    return (player.position.y - player.radius + player.velocity.y <= block.position.y + block.height && 
+        player.position.x + player.radius + player.velocity.x >= block.position.x && 
+        player.position.y + player.radius + player.velocity.y>= block.position.y && 
+        player.position.x - player.radius + player.velocity.x <= block.position.x + block.width)
+}
 
 function animation (){
     requestAnimationFrame(animation)
     content.clearRect(0, 0, canvas.width, canvas.height)
-    //prints the grid, like in a loop.
-    tmp_boundaries.forEach((boundary) => {
-        boundary.print()
 
-        //checks for overlapping, so the pacman does not go out of the designed boundary
-        if (man.position.y - man.radius + man.velocity.y <= boundary.position.y + boundary.height
-        && man.position.x + man.radius + man.velocity.x >= boundary.position.x &&
-        man.position.y + man.radius + man.velocity.y>= boundary.position.y && 
-        man.position.x - man.radius + man.velocity.x <= boundary.position.x + boundary.width) 
-        {
-            console.log ('colliding')
-        }
-    })
-    man.update()
-
-    
+    //up direction
     if (k.w.pressed && final_key === 'w')
     {
-        man.velocity.y = -5
+        //{...man} = duplicating pacman objects into itself.
+        for (let index = 0; index < tmp_boundaries.length; index++)
+        {   
+            const boundary = tmp_boundaries[index]
+            if (collsion({player: {...man, velocity: {x:0, y:-5}}, block:boundary}))
+            {
+                man.velocity.y = 0
+                break
+            }
+            else
+            {
+                man.velocity.y = -5
+            }
+
+        }
+        
     }
+    
     if (k.a.pressed && final_key === 'a')
     {
         man.velocity.x = -5
     }
     if (k.s.pressed && final_key === 's')
     {
-        man.velocity.y = 5
+        for (let index = 0; index < tmp_boundaries.length; index++)
+        {   
+            const boundary = tmp_boundaries[index]
+            if (collsion({player: {...man, velocity: {x:0, y:5}}, block:boundary}))
+            {
+                man.velocity.y = 0
+                break
+            }
+            else
+            {
+                man.velocity.y = 5
+            }
+
+        }
     }
     if (k.d.pressed && final_key === 'd')
     {
         man.velocity.x = 5
     }
+    //prints the grid, like in a loop.
+    tmp_boundaries.forEach((boundary) => {
+        boundary.print()
+
+        //checks for overlapping, so the pacman does not go out of the designed boundary
+        //velocity in this case will always be negative.
+        if (collsion({player: man, block: boundary}))
+        {
+            //console.log ('colliding')
+            //the following will make sure the pacman will stop when hits the wall.
+            man.velocity.x = 0
+            man.velocity.y = 0
+        }
+    })
+    man.update()
+    
 }
 animation()
 
