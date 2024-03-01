@@ -57,8 +57,8 @@ const map = [
     ['-', ' ', ' ', ' ', ' ', ' ','-'],
     ['-', ' ', '-', ' ', '-', ' ','-'],
     ['-', ' ', ' ', ' ', ' ', ' ','-'],
-    // ['-', ' ', '-', ' ', '-', ' ','-'],
-    // ['-', ' ', ' ', ' ', ' ', ' ','-'],
+    ['-', ' ', '-', ' ', '-', ' ','-'],
+    ['-', ' ', ' ', ' ', ' ', ' ','-'],
     ['-', '-', '-', '-', '-', '-','-']
 ]
 const tmp_boundaries =[]
@@ -132,10 +132,26 @@ function animation (){
         
     }
     
+    //left direction
     if (k.a.pressed && final_key === 'a')
     {
-        man.velocity.x = -5
+        for (let index = 0; index < tmp_boundaries.length; index++)
+        {   
+            const boundary = tmp_boundaries[index]
+            if (collsion({player: {...man, velocity: {x:-5, y:0}}, block:boundary}))
+            {
+                man.velocity.x = 0
+                break
+            }
+            else
+            {
+                man.velocity.x = -5
+            }
+
+        }
     }
+
+    //down direction
     if (k.s.pressed && final_key === 's')
     {
         for (let index = 0; index < tmp_boundaries.length; index++)
@@ -153,9 +169,24 @@ function animation (){
 
         }
     }
+
+    //right direction
     if (k.d.pressed && final_key === 'd')
     {
-        man.velocity.x = 5
+        for (let index = 0; index < tmp_boundaries.length; index++)
+        {   
+            const boundary = tmp_boundaries[index]
+            if (collsion({player: {...man, velocity: {x:5, y:0}}, block:boundary}))
+            {
+                man.velocity.x = 0
+                break
+            }
+            else
+            {
+                man.velocity.x = 5
+            }
+
+        }
     }
     //prints the grid, like in a loop.
     tmp_boundaries.forEach((boundary) => {
