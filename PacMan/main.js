@@ -53,6 +53,24 @@ class pacman
         this.position.y = this.position.y + this.velocity.y
     }
 }
+
+class Cookies 
+{
+    constructor ({position}) {
+        this.position = position
+        this.radius = 3 //circular figure. Number will be subject to change later on
+    }
+
+    print() {
+        //will draw out a perfect circle.
+        content.beginPath()
+        content.arc(this.position.x, this.position.y,
+                    this.radius, 0, Math.PI * 2)
+        content.fillStyle = "yellow"
+        content.fill()
+        content.closePath()
+    }
+}
 // used to generate new corresponding squares for boundaries. 
 // const map = [
 //     ['c1', '-', '-', '-', '-', '-','c2'],
@@ -78,6 +96,8 @@ const map = [
     ['|', '.', '.', '.', '.', '.', '.', '.', '.', 'p', '|'],
     ['3', '-', '-', '-', '-', '-', '-', '-', '-', '-', '4']
 ]
+
+const dots = []
 const tmp_boundaries =[]
 const man = new pacman({
     position: {
@@ -375,6 +395,16 @@ map.forEach((row, i) => {
                   })
                 )
                 break
+              case '.':
+                dots.push(
+                  new Cookies({
+                    position: {
+                      x: j * Boundary.width + Boundary.width/2,
+                      y: i * Boundary.height + Boundary.height/2
+                    }
+                  })
+                )
+                break
         }
     })
 })
@@ -466,6 +496,11 @@ function animation (){
 
         }
     }
+
+    dots.forEach(dots => {
+      dots.print()
+    })
+    
     //prints the grid, like in a loop.
     tmp_boundaries.forEach((boundary) => {
         boundary.print()
