@@ -497,9 +497,16 @@ function animation (){
         }
     }
 
-    dots.forEach(dots => {
-      dots.print()
-    })
+    for (let pos = dots.length - 1; 0 <= pos; pos--) 
+    {
+      const dot = dots[pos]
+      dot.print()
+      if (Math.hypot(dot.position.x - man.position.x,
+          dot.position.y - man.position.y) < dot.radius + man.radius) 
+      {
+        dots.splice(pos, 1)
+      }
+    }
     
     //prints the grid, like in a loop.
     tmp_boundaries.forEach((boundary) => {
