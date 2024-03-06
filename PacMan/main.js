@@ -55,6 +55,33 @@ class pacman
     }
 }
 
+class Ghosts 
+{
+    constructor ({position, velocity, color = "red"}) {
+        this.position = position
+        this.velocity = velocity // pacman will have movements. 
+        this.radius = 15 //not sure about the image. may made some adjustment later on.
+        this.color = color
+    }
+
+    print() {
+        //will draw out a perfect circle.
+        content.beginPath()
+        content.arc(this.position.x, this.position.y,
+                    this.radius, 0, Math.PI * 2)
+        content.fillStyle = this.color
+        content.fill()
+        content.closePath()
+    }
+
+    // a small function for every animation that are happening
+    update(){
+        this.print()
+        this.position.x = this.position.x + this.velocity.x
+        this.position.y = this.position.y + this.velocity.y
+    }
+}
+
 class Cookies 
 {
     constructor ({position}) {
@@ -101,6 +128,17 @@ const map = [
 const dots = []
 const tmp_boundaries =[]
 const man = new pacman({
+    position: {
+        //formulas for the circle to spawn in the center.
+        x: Boundary.width + Boundary.width / 2,
+        y: Boundary.height + Boundary.height / 2
+    },
+    velocity: {
+        x: 0,
+        y: 0
+    }
+})
+const ghosts = new Ghosts({
     position: {
         //formulas for the circle to spawn in the center.
         x: Boundary.width + Boundary.width / 2,
@@ -529,6 +567,27 @@ function animation (){
         }
     })
     man.update()
+
+    ghosts.forEach(gst => {
+        gst.update()
+        new collide = []
+        if (collsion({player: {...gst, velocity: {x:0, y:5}}, block:boundary}))
+        {
+            collide.push("left")
+        }
+        if (collsion({player: {...gst, velocity: {x:0, y:5}}, block:boundary}))
+        {
+            collide.push("right")
+        }
+        if (collsion({player: {...gst, velocity: {x:0, y:5}}, block:boundary}))
+        {
+            collide.push("up")
+        }
+        if (collsion({player: {...gst, velocity: {x:0, y:5}}, block:boundary}))
+        {
+            collide.push("down")
+        }
+    })
     
 }
 animation()
