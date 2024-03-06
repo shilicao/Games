@@ -1,6 +1,6 @@
 *{
     margin: 0;
-    padding: 0;
+    padding: 0px;
     font-family: "Roboto", "serif";
     box-sizing: border-box;
 
@@ -9,5 +9,12 @@
 body {
     background: black;
     /* add a background image later on, only if applicable.  */
-    
+    /* margin-left: 30%; */
+}
+
+.score{
+    color: white;
+    font-size: 24px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

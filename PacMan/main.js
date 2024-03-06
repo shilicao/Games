@@ -1,5 +1,6 @@
 const canvas = document.querySelector("canvas")
 const content = canvas.getContext("2d")
+const points = document.querySelector('#pts')
 
 canvas.width = window.innerWidth
 canvas.height = window.innerHeight
@@ -113,6 +114,8 @@ const man = new pacman({
 
 //tracks which keys are pressed when press 2 more keys
 let final_key = ''
+let scores = -10 // for some reason, my score would start at 10, not 0. 
+
 const k = {
     w:{pressed: false},
     a:{pressed: false},
@@ -497,6 +500,7 @@ function animation (){
         }
     }
 
+    //animation for consuming cookies.
     for (let pos = dots.length - 1; 0 <= pos; pos--) 
     {
       const dot = dots[pos]
@@ -505,6 +509,8 @@ function animation (){
           dot.position.y - man.position.y) < dot.radius + man.radius) 
       {
         dots.splice(pos, 1)
+        scores = scores + 10
+        pts.innerHTML = scores
       }
     }
     
