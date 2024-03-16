@@ -28,7 +28,7 @@ class Boundary
     }
 }
 
-//class for actual game contents
+//class for player or actual pacman
 class pacman 
 {
     constructor ({position, velocity}) {
@@ -57,31 +57,38 @@ class pacman
 
 class Ghosts 
 {
-    constructor ({position, velocity, color = "red"}) {
-        this.position = position
-        this.velocity = velocity // pacman will have movements. 
-        this.radius = 15 //not sure about the image. may made some adjustment later on.
-        this.color = color
-    }
+  static speed = 2
+  constructor ({position, velocity, color = "red"}) {
+      this.position = position
+      this.velocity = velocity // pacman will have movements. 
+      this.radius = 15 //not sure about the image. may made some adjustment later on.
+      this.color = color
+      this.speed = 2
+      //check collision for ghosts dynamically, find the difference between
+      //previous collision and the present collision. 
+      this.past = []
+  
+  }
 
-    print() {
-        //will draw out a perfect circle.
-        content.beginPath()
-        content.arc(this.position.x, this.position.y,
-                    this.radius, 0, Math.PI * 2)
-        content.fillStyle = this.color
-        content.fill()
-        content.closePath()
-    }
+  print() {
+      //will draw out a perfect circle.
+      content.beginPath()
+      content.arc(this.position.x, this.position.y,
+                  this.radius, 0, Math.PI * 2)
+      content.fillStyle = this.color
+      content.fill()
+      content.closePath()
+  }
 
-    // a small function for every animation that are happening
-    update(){
-        this.print()
-        this.position.x = this.position.x + this.velocity.x
-        this.position.y = this.position.y + this.velocity.y
-    }
+  // a small function for every animation that are happening
+  update(){
+      this.print()
+      this.position.x = this.position.x + this.velocity.x
+      this.position.y = this.position.y + this.velocity.y
+  }
 }
 
+//class for dots or pellets
 class Cookies 
 {
     constructor ({position}) {
@@ -138,22 +145,40 @@ const man = new pacman({
         y: 0
     }
 })
-const ghosts = new Ghosts({
+const enemy = [new Ghosts({
+  position: {
+    x: Boundary.width  + Boundary.width / 2,
+    y: Boundary.height * 5 + Boundary.height / 2
+  },
+  velocity: {
+    x:Ghosts.speed,
+    y:0
+  }}),
+  new Ghosts({
     position: {
-        //formulas for the circle to spawn in the center.
-        x: Boundary.width + Boundary.width / 2,
-        y: Boundary.height + Boundary.height / 2
+      x: Boundary.width * 6 + Boundary.width / 2,
+      y: Boundary.height  + Boundary.height / 2
     },
     velocity: {
-        x: 0,
-        y: 0
-    }
-})
+      x:Ghosts.speed,
+      y:0
+  }, color:'green'}), 
+  new Ghosts({
+    position: {
+      x: Boundary.width * 7 + Boundary.width / 2,
+      y: Boundary.height * 9 + Boundary.height / 2
+    },
+    velocity: {
+      x:Ghosts.speed,
+      y:0
+  }, color:'purple'}), 
+  
+]
 
 //tracks which keys are pressed when press 2 more keys
 let final_key = ''
 let scores = -10 // for some reason, my score would start at 10, not 0. 
-
+let animate_effect
 const k = {
     w:{pressed: false},
     a:{pressed: false},
@@ -450,145 +475,215 @@ map.forEach((row, i) => {
     })
 })
 function collsion({player, block}){
-    return (player.position.y - player.radius + player.velocity.y <= block.position.y + block.height && 
-        player.position.x + player.radius + player.velocity.x >= block.position.x && 
-        player.position.y + player.radius + player.velocity.y>= block.position.y && 
-        player.position.x - player.radius + player.velocity.x <= block.position.x + block.width)
+    //check the padding or pixels if speed is less than 5.
+    const padding = Boundary.width / 2 - player.radius - 1
+    return (player.position.y - player.radius + player.velocity.y <= block.position.y + block.height + padding && 
+        player.position.x + player.radius + player.velocity.x >= block.position.x - padding && 
+        player.position.y + player.radius + player.velocity.y>= block.position.y - padding && 
+        player.position.x - player.radius + player.velocity.x <= block.position.x + block.width + padding)
 }
 
 function animation (){
-    requestAnimationFrame(animation)
-    content.clearRect(0, 0, canvas.width, canvas.height)
+  animate_effect = requestAnimationFrame(animation)
+  content.clearRect(0, 0, canvas.width, canvas.height)
 
-    //up direction
-    if (k.w.pressed && final_key === 'w')
-    {
-        //{...man} = duplicating pacman objects into itself.
-        for (let index = 0; index < tmp_boundaries.length; index++)
-        {   
-            const boundary = tmp_boundaries[index]
-            if (collsion({player: {...man, velocity: {x:0, y:-5}}, block:boundary}))
-            {
-                man.velocity.y = 0
-                break
-            }
-            else
-            {
-                man.velocity.y = -5
-            }
+  //up direction
+  if (k.w.pressed && final_key === 'w')
+  {
+      //{...man} = duplicating pacman objects into itself.
+      for (let index = 0; index < tmp_boundaries.length; index++)
+      {   
+          const boundary = tmp_boundaries[index]
+          if (collsion({player: {...man, velocity: {x:0, y:-5}}, block:boundary}))
+          {
+              man.velocity.y = 0
+              break
+          }
+          else
+          {
+              man.velocity.y = -5
+          }
 
-        }
-        
-    }
-    
-    //left direction
-    if (k.a.pressed && final_key === 'a')
-    {
-        for (let index = 0; index < tmp_boundaries.length; index++)
-        {   
-            const boundary = tmp_boundaries[index]
-            if (collsion({player: {...man, velocity: {x:-5, y:0}}, block:boundary}))
-            {
-                man.velocity.x = 0
-                break
-            }
-            else
-            {
-                man.velocity.x = -5
-            }
-
-        }
-    }
-
-    //down direction
-    if (k.s.pressed && final_key === 's')
-    {
-        for (let index = 0; index < tmp_boundaries.length; index++)
-        {   
-            const boundary = tmp_boundaries[index]
-            if (collsion({player: {...man, velocity: {x:0, y:5}}, block:boundary}))
-            {
-                man.velocity.y = 0
-                break
-            }
-            else
-            {
-                man.velocity.y = 5
-            }
-
-        }
-    }
-
-    //right direction
-    if (k.d.pressed && final_key === 'd')
-    {
-        for (let index = 0; index < tmp_boundaries.length; index++)
-        {   
-            const boundary = tmp_boundaries[index]
-            if (collsion({player: {...man, velocity: {x:5, y:0}}, block:boundary}))
-            {
-                man.velocity.x = 0
-                break
-            }
-            else
-            {
-                man.velocity.x = 5
-            }
-
-        }
-    }
-
-    //animation for consuming cookies.
-    for (let pos = dots.length - 1; 0 <= pos; pos--) 
-    {
-      const dot = dots[pos]
-      dot.print()
-      if (Math.hypot(dot.position.x - man.position.x,
-          dot.position.y - man.position.y) < dot.radius + man.radius) 
-      {
-        dots.splice(pos, 1)
-        scores = scores + 10
-        pts.innerHTML = scores
       }
+      
+  }
+  
+  //left direction
+  if (k.a.pressed && final_key === 'a')
+  {
+      for (let index = 0; index < tmp_boundaries.length; index++)
+      {   
+          const boundary = tmp_boundaries[index]
+          if (collsion({player: {...man, velocity: {x:-5, y:0}}, block:boundary}))
+          {
+              man.velocity.x = 0
+              break
+          }
+          else
+          {
+              man.velocity.x = -5
+          }
+
+      }
+  }
+
+  //down direction
+  if (k.s.pressed && final_key === 's')
+  {
+      for (let index = 0; index < tmp_boundaries.length; index++)
+      {   
+          const boundary = tmp_boundaries[index]
+          if (collsion({player: {...man, velocity: {x:0, y:5}}, block:boundary}))
+          {
+              man.velocity.y = 0
+              break
+          }
+          else
+          {
+              man.velocity.y = 5
+          }
+
+      }
+  }
+
+  //right direction
+  if (k.d.pressed && final_key === 'd')
+  {
+      for (let index = 0; index < tmp_boundaries.length; index++)
+      {   
+          const boundary = tmp_boundaries[index]
+          if (collsion({player: {...man, velocity: {x:5, y:0}}, block:boundary}))
+          {
+              man.velocity.x = 0
+              break
+          }
+          else
+          {
+              man.velocity.x = 5
+          }
+
+      }
+  }
+
+  //animation for consuming cookies.
+  for (let pos = dots.length - 1; 0 <= pos; pos--) 
+  {
+    const dot = dots[pos]
+    dot.print()
+    if (Math.hypot(dot.position.x - man.position.x,
+        dot.position.y - man.position.y) < dot.radius + man.radius) 
+    {
+      dots.splice(pos, 1)
+      scores = scores + 10
+      pts.innerHTML = scores
     }
-    
-    //prints the grid, like in a loop.
-    tmp_boundaries.forEach((boundary) => {
-        boundary.print()
+  }
+  
+  //prints the grid, like in a loop.
+  tmp_boundaries.forEach((boundary) => {
+      boundary.print()
 
-        //checks for overlapping, so the pacman does not go out of the designed boundary
-        //velocity in this case will always be negative.
-        if (collsion({player: man, block: boundary}))
-        {
-            //console.log ('colliding')
-            //the following will make sure the pacman will stop when hits the wall.
-            man.velocity.x = 0
-            man.velocity.y = 0
-        }
-    })
-    man.update()
+      //checks for overlapping, so the pacman does not go out of the designed boundary
+      //velocity in this case will always be negative.
+      if (collsion({player: man, block: boundary}))
+      {
+          //console.log ('colliding')
+          //the following will make sure the pacman will stop when hits the wall.
+          man.velocity.x = 0
+          man.velocity.y = 0
+      }
+  })
+  man.update()
 
-    ghosts.forEach(gst => {
-        gst.update()
-        new collide = []
-        if (collsion({player: {...gst, velocity: {x:0, y:5}}, block:boundary}))
-        {
-            collide.push("left")
-        }
-        if (collsion({player: {...gst, velocity: {x:0, y:5}}, block:boundary}))
-        {
-            collide.push("right")
-        }
-        if (collsion({player: {...gst, velocity: {x:0, y:5}}, block:boundary}))
-        {
-            collide.push("up")
-        }
-        if (collsion({player: {...gst, velocity: {x:0, y:5}}, block:boundary}))
-        {
-            collide.push("down")
-        }
+  enemy.forEach(gst => {
+    gst.update()
+    if (Math.hypot(gst.position.x - man.position.x,
+      gst.position.y - man.position.y) < gst.radius + man.radius) 
+    {
+      cancelAnimationFrame(animate_effect)
+    }
+    const collide = []
+    tmp_boundaries.forEach(boundary => 
+    {
+      if (!collide.includes('left') && collsion
+      ({player: {...gst, velocity: {x:-gst.speed, y:0}}, block:boundary}))
+      {
+        collide.push('left')
+      }
+      if (!collide.includes('right') && collsion
+      ({player: {...gst, velocity: {x:gst.speed, y:0}}, block:boundary}))
+      {
+        collide.push('right')
+      }
+      if (!collide.includes('up') && collsion
+      ({player: {...gst, velocity: {x:0, y:-gst.speed}}, block:boundary}))
+      {
+        collide.push('up')
+      }
+      if (!collide.includes('down') && collsion
+      ({player: {...gst, velocity: {x:0, y:gst.speed}}, block:boundary}))
+      {
+        collide.push('down')
+      }
     })
-    
+    if (collide.length > gst.past.length)
+    {
+      //past collision holds the postion of current collsion. 
+      gst.past = collide 
+    }
+    //two separate array type needs to be stringify. 
+    if (JSON.stringify(collide) !== JSON.stringify(gst.past))
+    {
+      if (gst.velocity.x > 0)
+      {
+        gst.past.push('right')
+      }
+      if (gst.velocity.x < 0)
+      {
+        gst.past.push('left')
+      }
+      if (gst.velocity.y > 0)
+      {
+        gst.past.push('down')
+      }
+      if (gst.velocity.y < 0)
+      {
+        gst.past.push('up')
+      }
+      const movement = gst.past.filter(traffic => {
+        return !collide.includes(traffic)
+      })
+
+       //choose random paths for the ghosts
+      const path = movement[Math.floor(Math.random() * movement.length)]
+
+      //switch for different velocity value.
+      switch (path) 
+      {
+        case 'up':
+          gst.velocity.x = 0
+          gst.velocity.y = -gst.speed
+          break
+
+        case 'down':
+          gst.velocity.x = 0
+          gst.velocity.y = gst.speed
+          break
+          
+        case 'left':
+          gst.velocity.x = -gst.speed;
+          gst.velocity.y = 0;
+          break
+
+        case 'right':
+          gst.velocity.x = gst.speed;
+          gst.velocity.y = 0;
+          break
+      }
+      gst.past = [] //reset the whole randomness.
+    }
+  })
+  
 }
 animation()
 
