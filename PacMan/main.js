@@ -67,6 +67,7 @@ class Ghosts
       //check collision for ghosts dynamically, find the difference between
       //previous collision and the present collision. 
       this.past = []
+      this.scared = false
   
   }
 
@@ -75,7 +76,11 @@ class Ghosts
       content.beginPath()
       content.arc(this.position.x, this.position.y,
                   this.radius, 0, Math.PI * 2)
-      content.fillStyle = this.color
+
+      //question mark(ternary sign) can be thought as if statement/
+      //If scared property is activated, ghosts will turn blue,
+      //if not stay with their original colors.
+      content.fillStyle = this.scared ? 'blue' : this.color
       content.fill()
       content.closePath()
   }
@@ -102,6 +107,25 @@ class Cookies
         content.arc(this.position.x, this.position.y,
                     this.radius, 0, Math.PI * 2)
         content.fillStyle = "yellow"
+        content.fill()
+        content.closePath()
+    }
+}
+
+//class for powerup 
+class Power 
+{
+    constructor ({position}) {
+        this.position = position
+        this.radius = 12 //circular figure. Number will be subject to change later on
+    }
+
+    print() {
+        //will draw out a perfect circle.
+        content.beginPath()
+        content.arc(this.position.x, this.position.y,
+                    this.radius, 0, Math.PI * 2)
+        content.fillStyle = "white"
         content.fill()
         content.closePath()
     }
@@ -133,6 +157,7 @@ const map = [
 ]
 
 const dots = []
+const power = []
 const tmp_boundaries =[]
 const man = new pacman({
     position: {
@@ -153,25 +178,25 @@ const enemy = [new Ghosts({
   velocity: {
     x:Ghosts.speed,
     y:0
-  }}),
-  new Ghosts({
-    position: {
-      x: Boundary.width * 6 + Boundary.width / 2,
-      y: Boundary.height  + Boundary.height / 2
-    },
-    velocity: {
-      x:Ghosts.speed,
-      y:0
-  }, color:'green'}), 
-  new Ghosts({
-    position: {
-      x: Boundary.width * 7 + Boundary.width / 2,
-      y: Boundary.height * 9 + Boundary.height / 2
-    },
-    velocity: {
-      x:Ghosts.speed,
-      y:0
-  }, color:'purple'}), 
+  }})
+  // new Ghosts({
+  //   position: {
+  //     x: Boundary.width * 6 + Boundary.width / 2,
+  //     y: Boundary.height  + Boundary.height / 2
+  //   },
+  //   velocity: {
+  //     x:Ghosts.speed,
+  //     y:0
+  // }, color:'green'}), 
+  // new Ghosts({
+  //   position: {
+  //     x: Boundary.width * 7 + Boundary.width / 2,
+  //     y: Boundary.height * 9 + Boundary.height / 2
+  //   },
+  //   velocity: {
+  //     x:Ghosts.speed,
+  //     y:0
+  // }, color:'purple'}), 
   
 ]
 
@@ -471,6 +496,17 @@ map.forEach((row, i) => {
                   })
                 )
                 break
+
+              case 'p':
+                power.push(
+                  new Power({
+                    position: {
+                      x: j * Boundary.width + Boundary.width/2,
+                      y: i * Boundary.height + Boundary.height/2
+                    }
+                  })
+                )
+                break
         }
     })
 })
@@ -578,6 +614,42 @@ function animation (){
       pts.innerHTML = scores
     }
   }
+
+  //animation for pacman to consume powerUp to become invincible for few seconds.
+  for (let pos = power.length - 1; 0 <= pos; pos--) 
+  {
+    const invincible = power[pos]
+    invincible.print()
+    if (Math.hypot(invincible.position.x - man.position.x,
+      invincible.position.y - man.position.y) < invincible.radius + man.radius) 
+    {
+      power.splice(pos, 1)
+
+      //once consume the powerup, ghost should be feared for 3 seconds
+      enemy.forEach(ghost => {
+        ghost.scared = true
+        setTimeout(()=>{ghost.scared = false}, 3000)
+      })
+    }
+  }
+
+  //remove ghosts once pacman consumes powerup
+  for (let pos = enemy.length - 1; 0 <= pos; pos--)
+  {
+    const gst = enemy[pos]
+    if (Math.hypot(gst.position.x - man.position.x,
+      gst.position.y - man.position.y) < gst.radius + man.radius) 
+    {
+      if (gst.scared)
+      {
+        enemy.splice(pos, 1)
+      }
+      else
+      {
+        cancelAnimationFrame(animate_effect)
+      }
+    }
+  }
   
   //prints the grid, like in a loop.
   tmp_boundaries.forEach((boundary) => {
@@ -597,11 +669,12 @@ function animation (){
 
   enemy.forEach(gst => {
     gst.update()
-    if (Math.hypot(gst.position.x - man.position.x,
-      gst.position.y - man.position.y) < gst.radius + man.radius) 
-    {
-      cancelAnimationFrame(animate_effect)
-    }
+    // if (Math.hypot(gst.position.x - man.position.x,
+    //   gst.position.y - man.position.y) < gst.radius + man.radius
+    //   && !gst.scared) 
+    // {
+    //   cancelAnimationFrame(animate_effect)
+    // }
     const collide = []
     tmp_boundaries.forEach(boundary => 
     {
