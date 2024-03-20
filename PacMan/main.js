@@ -35,16 +35,25 @@ class pacman
         this.position = position
         this.velocity = velocity // pacman will have movements. 
         this.radius = 15 //circular figure. Number will be subject to change later on
+        this.openMouth = 0.75
+        this.openRate = 0.10
+        this.rotation = 0
     }
 
     print() {
         //will draw out a perfect circle.
+        content.save()
+        content.translate(this.position.x, this.position.y)
+        content.rotate(this.rotation)
+        content.translate(-this.position.x, -this.position.y)
         content.beginPath()
         content.arc(this.position.x, this.position.y,
-                    this.radius, 0, Math.PI * 2)
+                    this.radius, this.openMouth, Math.PI * 2 - this.openMouth)
+        content.lineTo(this.position.x, this.position.y)
         content.fillStyle = "yellow"
         content.fill()
         content.closePath()
+        content.restore()
     }
 
     // a small function for every animation that are happening
@@ -52,6 +61,12 @@ class pacman
         this.print()
         this.position.x = this.position.x + this.velocity.x
         this.position.y = this.position.y + this.velocity.y
+
+        if (this.openMouth < 0 || this.openMouth > 3/4)
+        {
+          this.openRate = (-this.openRate)
+        }
+        this.openMouth = this.openMouth + this.openRate
     }
 }
 
@@ -178,25 +193,25 @@ const enemy = [new Ghosts({
   velocity: {
     x:Ghosts.speed,
     y:0
-  }})
-  // new Ghosts({
-  //   position: {
-  //     x: Boundary.width * 6 + Boundary.width / 2,
-  //     y: Boundary.height  + Boundary.height / 2
-  //   },
-  //   velocity: {
-  //     x:Ghosts.speed,
-  //     y:0
-  // }, color:'green'}), 
-  // new Ghosts({
-  //   position: {
-  //     x: Boundary.width * 7 + Boundary.width / 2,
-  //     y: Boundary.height * 9 + Boundary.height / 2
-  //   },
-  //   velocity: {
-  //     x:Ghosts.speed,
-  //     y:0
-  // }, color:'purple'}), 
+  }}),
+  new Ghosts({
+    position: {
+      x: Boundary.width * 6 + Boundary.width / 2,
+      y: Boundary.height  + Boundary.height / 2
+    },
+    velocity: {
+      x:Ghosts.speed,
+      y:0
+  }, color:'green'}), 
+  new Ghosts({
+    position: {
+      x: Boundary.width * 7 + Boundary.width / 2,
+      y: Boundary.height * 9 + Boundary.height / 2
+    },
+    velocity: {
+      x:Ghosts.speed,
+      y:0
+  }, color:'purple'}), 
   
 ]
 
@@ -651,6 +666,13 @@ function animation (){
     }
   }
   
+  //once pacman consumes all the cookies, player wins the game.
+  if (dots.length === 0)
+  {
+    //will look up some info on how to do a pop screen. 
+    cancelAnimationFrame(animate_effect)
+  }
+
   //prints the grid, like in a loop.
   tmp_boundaries.forEach((boundary) => {
       boundary.print()
@@ -756,7 +778,24 @@ function animation (){
       gst.past = [] //reset the whole randomness.
     }
   })
-  
+
+  //ifs to make pacman's mouth in a correct position when moving.
+  if (man.velocity.x > 0) //open right
+  {
+    man.rotation = 0
+  }
+  if (man.velocity.x < 0) //open left
+  {
+    man.rotation = Math.PI
+  }
+  if (man.velocity.y < 0) //open up
+  {
+    man.rotation = Math.PI*1.5
+  }
+  if (man.velocity.y > 0) //down
+  {
+    man.rotation = Math.PI/2
+  }
 }
 animation()
 
