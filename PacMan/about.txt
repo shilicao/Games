@@ -1,0 +1,8 @@
+Pac Man, was once called a "Puck Man" in Japan. It was originated as 
+maze action video game. 
+For my program, it was developed by html canvas along side with javascript
+and some css for styling. This game was not perfect as it can still go far and
+beyond. Few areas that can be improve for this game:
+1. Design a bigger map
+2. Implementation of multi-live pacman for the game.
+3. Add eventlistener for the arrow keys. 

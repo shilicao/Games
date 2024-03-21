@@ -792,7 +792,7 @@ function animation (){
   {
     man.rotation = Math.PI*1.5
   }
-  if (man.velocity.y > 0) //down
+  if (man.velocity.y > 0) //open down
   {
     man.rotation = Math.PI/2
   }
